@@ -298,13 +298,24 @@
             </section>
         </div>
 
-        <!-- VIEW 2: DATA MINING (K-MEANS) -->
+        <!-- VIEW 2: DATA MINING -->
         <div id="view-mining" style="display: none;">
             <section class="filter-panel" aria-label="Penjelasan Data Mining" style="margin-top: 1rem;">
-                <h2 class="section-title">Segmentasi Pelanggan (K-Means Clustering)</h2>
-                <p style="color: var(--text-secondary); margin-bottom: 0; text-indent: 0; line-height: 1.6;">
-                    Di bagian ini, kita menjalankan algoritma data mining <strong>K-Means Clustering (k=3)</strong> secara langsung pada database MySQL untuk membagi 500 transaksi penjualan kosmetik ke dalam 3 kelompok konsumen (klaster) berdasarkan kombinasi <strong>Harga Produk (Price_USD)</strong> dan <strong>Jumlah Unit yang Dibeli (Units_Sold)</strong>. Metode ini berguna untuk memetakan kelompok pembeli kosmetik kita secara otomatis demi memudahkan atasan menyusun strategi pemasaran yang relevan.
-                </p>
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem; width: 100%;">
+                    <div style="flex: 1; min-width: 280px;">
+                        <h2 class="section-title" id="mining-title" style="margin-bottom: 0.5rem;">Segmentasi Pelanggan (K-Means Clustering)</h2>
+                        <p id="mining-explanation" style="color: var(--text-secondary); margin-bottom: 0; text-indent: 0; line-height: 1.6; font-size: 0.9rem;">
+                            Di bagian ini, kita menjalankan algoritma data mining <strong>K-Means Clustering (k=3)</strong> secara langsung pada database MySQL untuk membagi 500 transaksi penjualan kosmetik ke dalam 3 kelompok konsumen (klaster) berdasarkan kombinasi <strong>Harga Produk (Price_USD)</strong> dan <strong>Jumlah Unit yang Dibeli (Units_Sold)</strong>. Metode ini berguna untuk memetakan kelompok pembeli kosmetik kita secara otomatis demi memudahkan atasan menyusun strategi pemasaran yang relevan.
+                        </p>
+                    </div>
+                    <div style="min-width: 250px; background: rgba(255, 255, 255, 0.02); padding: 1rem; border-radius: 12px; border: 1px solid rgba(224, 168, 153, 0.15); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2); backdrop-filter: blur(10px);">
+                        <label for="select-algorithm" style="display: block; font-size: 0.8rem; color: var(--text-secondary); font-weight: bold; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Pilih Algoritma Data Mining</label>
+                        <select id="select-algorithm" onchange="onAlgorithmChange()" style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; background: rgba(30, 20, 25, 0.85); border: 1px solid rgba(224, 168, 153, 0.3); color: var(--text-primary); font-family: inherit; font-size: 0.85rem; font-weight: 500; cursor: pointer; outline: none; transition: all 0.3s ease;">
+                            <option value="k-means">K-Means Clustering (Partition-Based, k=3)</option>
+                            <option value="dbscan">DBSCAN Clustering (Density-Based, eps=0.08, minPts=4)</option>
+                        </select>
+                    </div>
+                </div>
             </section>
 
             <!-- Centroid Summaries Grid -->
@@ -314,8 +325,8 @@
 
             <!-- Mining Chart Card -->
             <div class="chart-card" style="margin-bottom: 1.5rem;">
-                <h3>Peta Klaster Hasil Data Mining (k=3)</h3>
-                <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 1.25rem;">
+                <h3 id="mining-chart-title">Peta Klaster Hasil Data Mining (k=3)</h3>
+                <p id="mining-chart-desc" style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 1.25rem;">
                     Titik-titik di bawah ini dikelompokkan menjadi 3 warna mewakili klaster masing-masing. Simbol kotak berlian putih (◇) menandakan posisi tengah (Centroid) dari masing-masing klaster.
                 </p>
                 <div class="chart-container" style="height: 450px;">
@@ -920,19 +931,47 @@
             }
         }
 
-        function fetchMiningData() {
-            const summaryGrid = document.getElementById('mining-summary-grid');
-            summaryGrid.innerHTML = '<div style="color: var(--text-secondary); text-align: center; grid-column: 1/-1; padding: 2rem;">🔄 Menjalankan Algoritma K-Means di database MySQL... Mohon tunggu...</div>';
+        function onAlgorithmChange() {
+            fetchMiningData();
+        }
 
-            fetch('/api/data-mining/k-means')
+        function fetchMiningData() {
+            const algorithm = document.getElementById('select-algorithm').value;
+            const summaryGrid = document.getElementById('mining-summary-grid');
+            const miningTitle = document.getElementById('mining-title');
+            const miningExplanation = document.getElementById('mining-explanation');
+            const miningChartTitle = document.getElementById('mining-chart-title');
+            const miningChartDesc = document.getElementById('mining-chart-desc');
+            
+            let url = '/api/data-mining/k-means';
+            let loadingMsg = '🔄 Menjalankan Algoritma K-Means di database MySQL... Mohon tunggu...';
+            
+            if (algorithm === 'dbscan') {
+                url = '/api/data-mining/dbscan';
+                loadingMsg = '🔄 Menjalankan Algoritma DBSCAN (Density-Based Clustering) di MySQL... Mohon tunggu...';
+                
+                miningTitle.innerHTML = 'Segmentasi Pelanggan (DBSCAN Clustering)';
+                miningExplanation.innerHTML = 'Di bagian ini, kita menjalankan algoritma <strong>DBSCAN (Density-Based Spatial Clustering of Applications with Noise)</strong>. DBSCAN mengelompokkan data berdasarkan <strong>kepadatan area</strong> (jarak maksimal <code>eps=0.08</code> dan jumlah minimal tetangga <code>minPts=4</code>). Keunggulan utama DBSCAN adalah kemampuannya mendeteksi data pencilan (noise/outlier) secara otomatis yang tidak masuk ke dalam kelompok mana pun.';
+                miningChartTitle.innerHTML = 'Peta Klaster Hasil DBSCAN Clustering';
+                miningChartDesc.innerHTML = 'Titik-titik di bawah ini dikelompokkan berdasarkan kerapatan data. Titik yang berwarna abu-abu gelap melambangkan <strong>Outliers / Noise (Pencilan)</strong> yang tidak tergabung dalam kelompok padat mana pun. DBSCAN tidak memiliki Centroid tetap.';
+            } else {
+                miningTitle.innerHTML = 'Segmentasi Pelanggan (K-Means Clustering)';
+                miningExplanation.innerHTML = 'Di bagian ini, kita menjalankan algoritma data mining <strong>K-Means Clustering (k=3)</strong> secara langsung pada database MySQL untuk membagi 500 transaksi penjualan kosmetik ke dalam 3 kelompok konsumen (klaster) berdasarkan kombinasi <strong>Harga Produk (Price_USD)</strong> dan <strong>Jumlah Unit yang Dibeli (Units_Sold)</strong>. Metode ini berguna untuk memetakan kelompok pembeli kosmetik kita secara otomatis demi memudahkan atasan menyusun strategi pemasaran yang relevan.';
+                miningChartTitle.innerHTML = 'Peta Klaster Hasil Data Mining (k=3)';
+                miningChartDesc.innerHTML = 'Titik-titik di bawah ini dikelompokkan menjadi 3 warna mewakili klaster masing-masing. Simbol kotak berlian putih (◇) menandakan posisi tengah (Centroid) dari masing-masing klaster.';
+            }
+            
+            summaryGrid.innerHTML = `<div style="color: var(--text-secondary); text-align: center; grid-column: 1/-1; padding: 2rem;">${loadingMsg}</div>`;
+
+            fetch(url)
                 .then(response => response.json())
                 .then(data => {
                     summaryGrid.innerHTML = '';
                     
-                    const clusterColors = ['#e0a899', '#d4af37', '#7a2048'];
-                    const clusterClasses = ['bg-pink', 'bg-gold', 'bg-purple'];
+                    const clusterColors = ['#e0a899', '#d4af37', '#7a2048', '#4a90e2', '#50e3c2', '#b8e986', '#bd10e0', '#9013fe'];
+                    const clusterClasses = ['bg-pink', 'bg-gold', 'bg-purple', 'bg-blue', 'bg-green', 'bg-orange', 'bg-red', 'bg-teal'];
                     
-                    // 1. Render Centroid Summary Cards
+                    // 1. Render Summary Cards
                     data.summaries.forEach((summary, idx) => {
                         const card = document.createElement('div');
                         card.className = 'metric-card';
@@ -941,9 +980,16 @@
                         card.style.gap = '0.75rem';
                         card.style.padding = '1.5rem';
                         
+                        let badgeClass = clusterClasses[idx % clusterClasses.length];
+                        let extraStyle = '';
+                        if (summary.is_noise) {
+                            badgeClass = 'bg-secondary';
+                            extraStyle = 'background: rgba(100,100,100,0.5); border: 1px solid rgba(255,255,255,0.2);';
+                        }
+                        
                         card.innerHTML = `
                             <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
-                                <span class="badge ${clusterClasses[idx]}" style="font-weight: bold; font-size: 0.8rem; padding: 0.3rem 0.7rem;">${summary.name}</span>
+                                <span class="badge ${badgeClass}" style="font-weight: bold; font-size: 0.8rem; padding: 0.3rem 0.7rem; ${extraStyle}">${summary.name}</span>
                                 <span style="font-size: 0.8rem; color: var(--text-secondary); font-weight: 600;">${summary.count} Transaksi</span>
                             </div>
                             <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0.1rem 0; line-height: 1.5; text-indent: 0; text-align: left;">${summary.desc}</p>
@@ -959,51 +1005,77 @@
                         summaryGrid.appendChild(card);
                     });
 
-                    // 2. Render K-Means Scatter Plot (Splitting into 3 Cluster datasets)
+                    // 2. Render Scatter Plot
                     if (chartMiningScatter) chartMiningScatter.destroy();
 
                     const datasets = [];
-                    const clusterNames = data.summaries.map(s => s.name);
                     
-                    for (let c = 0; c < 3; c++) {
-                        const points = data.data
-                            .filter(item => item.cluster === c)
-                            .map(item => ({
-                                x: item.x,
-                                y: item.y,
-                                brand: item.brand,
-                                product_type: item.product_type
-                            }));
+                    // Group data points by cluster ID
+                    const clusterGroups = {};
+                    data.data.forEach(item => {
+                        if (!clusterGroups[item.cluster]) {
+                            clusterGroups[item.cluster] = [];
+                        }
+                        clusterGroups[item.cluster].push({
+                            x: item.x,
+                            y: item.y,
+                            brand: item.brand,
+                            product_type: item.product_type
+                        });
+                    });
+
+                    // Map cluster ID to its summary object
+                    const summariesMap = {};
+                    data.summaries.forEach(s => {
+                        summariesMap[s.cluster] = s;
+                    });
+
+                    Object.keys(clusterGroups).forEach((cIdStr) => {
+                        const cId = parseInt(cIdStr);
+                        const points = clusterGroups[cId];
+                        const summary = summariesMap[cId] || { name: `Cluster ${cId}`, is_noise: false };
                         
+                        let color = '#888888';
+                        if (summary.is_noise) {
+                            color = '#555555';
+                        } else {
+                            const sumIdx = data.summaries.findIndex(s => s.cluster === cId);
+                            if (sumIdx !== -1) {
+                                color = clusterColors[sumIdx % clusterColors.length];
+                            }
+                        }
+
                         datasets.push({
-                            label: clusterNames[c],
+                            label: summary.name,
                             data: points,
-                            backgroundColor: clusterColors[c] + 'a0', // transparency
-                            borderColor: clusterColors[c],
-                            pointRadius: 5,
+                            backgroundColor: color + 'a0', // transparency
+                            borderColor: color,
+                            pointRadius: summary.is_noise ? 4 : 5,
                             pointHoverRadius: 8,
                             borderWidth: 1
                         });
-                    }
-
-                    // Add Centroids as a special dataset
-                    const centroidPoints = data.summaries.map((s, idx) => ({
-                        x: s.avg_price,
-                        y: s.avg_units,
-                        label: s.name
-                    }));
-
-                    datasets.push({
-                        label: 'Centroid (◇)',
-                        data: centroidPoints,
-                        backgroundColor: '#ffffff',
-                        borderColor: '#ffffff',
-                        pointRadius: 10,
-                        pointHoverRadius: 12,
-                        pointStyle: 'rectRot', // diamond shape
-                        borderWidth: 3,
-                        showLine: false
                     });
+
+                    // Add Centroids ONLY for K-Means
+                    if (algorithm === 'k-means') {
+                        const centroidPoints = data.summaries.map((s) => ({
+                            x: s.avg_price,
+                            y: s.avg_units,
+                            label: s.name
+                        }));
+
+                        datasets.push({
+                            label: 'Centroid (◇)',
+                            data: centroidPoints,
+                            backgroundColor: '#ffffff',
+                            borderColor: '#ffffff',
+                            pointRadius: 10,
+                            pointHoverRadius: 12,
+                            pointStyle: 'rectRot', // diamond shape
+                            borderWidth: 3,
+                            showLine: false
+                        });
+                    }
 
                     const ctxMining = document.getElementById('chart-mining-scatter').getContext('2d');
                     chartMiningScatter = new Chart(ctxMining, {
@@ -1018,7 +1090,7 @@
                                 legend: {
                                     position: 'bottom',
                                     labels: {
-                                        color: '#E0E0E0',
+                                        color: '#e0a899',
                                         font: { family: 'Outfit', size: 10 }
                                     }
                                 },
@@ -1026,7 +1098,7 @@
                                     callbacks: {
                                         label: function(context) {
                                             const point = context.raw;
-                                            if (context.datasetIndex === 3) {
+                                            if (point.label) {
                                                 return `Pusat Centroid - ${point.label}: Harga $${point.x}, Terjual ${point.y} unit`;
                                             }
                                             return `${point.brand} (${point.product_type}): Harga $${point.x}, Terjual ${point.y} unit`;
@@ -1036,14 +1108,14 @@
                             },
                             scales: {
                                 x: { 
-                                    title: { display: true, text: 'Harga Produk (USD)', color: '#E0E0E0' },
-                                    grid: { color: 'rgba(255, 255, 255, 0.05)' }, 
-                                    ticks: { color: '#E0E0E0' } 
+                                    title: { display: true, text: 'Harga Produk (USD)', color: '#e0a899' },
+                                    grid: { color: 'rgba(224, 168, 153, 0.05)' }, 
+                                    ticks: { color: '#a08075', callback: function(value) { return '$' + value; } } 
                                 },
                                 y: { 
-                                    title: { display: true, text: 'Unit Terjual', color: '#E0E0E0' },
-                                    grid: { color: 'rgba(255, 255, 255, 0.05)' }, 
-                                    ticks: { color: '#E0E0E0' } 
+                                    title: { display: true, text: 'Unit Terjual', color: '#e0a899' },
+                                    grid: { color: 'rgba(224, 168, 153, 0.05)' }, 
+                                    ticks: { color: '#a08075' } 
                                 }
                             }
                         }

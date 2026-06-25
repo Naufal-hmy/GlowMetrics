@@ -258,16 +258,26 @@ Pembacaan analitis dari sebaran visualisasi dan analisis data GlowMetrics adalah
 
 ---
 
-## 8. Penerapan Metode Data Mining (K-Means Clustering)
+## 8. Penerapan Metode Data Mining & Perbandingan Algoritma (K-Means vs DBSCAN)
 
-Untuk menggali pola tersembunyi yang lebih mendalam dari data transaksi penjualan kosmetik ini, kami menerapkan salah satu metode data mining yang sangat populer, yaitu **K-Means Clustering (k=3)**. Algoritma ini berjalan secara otomatis pada database MySQL dengan menganalisis dua variabel penting: harga produk (`Price_USD`) dan jumlah unit yang terjual (`Units_Sold`).
+Untuk menggali pola tersembunyi yang lebih mendalam dari data transaksi penjualan kosmetik ini, kami menerapkan dua buah metode data mining pengelompokan (clustering) yang berbeda untuk dibandingkan kinerjanya: **K-Means Clustering (k=3)** dan **DBSCAN Clustering (eps=0.08, minPts=4)**. Kedua algoritma ini berjalan pada database MySQL dengan menganalisis dua variabel penting: harga produk (`Price_USD`) dan jumlah unit yang terjual (`Units_Sold`).
 
-Melalui proses data mining ini, data transaksi kosmetik ritel berhasil dibagi ke dalam 3 kelompok konsumen (klaster) dengan karakteristik yang sangat khas:
-* **Klaster 1: Segmen Ekonomis (Budget):** Kelompok transaksi ini memiliki rata-rata harga produk yang terjangkau dengan volume pembelian unit yang bervariasi. Mewakili konsumen yang sangat sensitif terhadap harga (price-sensitive) yang biasanya berbelanja aksesori kecantikan ringan atau makeup kasual harian.
-* **Klaster 2: Segmen Menengah (Mid-Range):** Kumpulan transaksi untuk kosmetik kelas menengah. Volume unit terjual di kelompok ini relatif stabil dan merata di semua negara ritel.
-* **Klaster 3: Segmen Premium (Luks):** Kumpulan transaksi untuk kosmetik mewah berharga tinggi. Kelompok konsumen ini terbukti tidak terlalu peduli dengan harga mahal (harga bersifat inelastis) karena mereka lebih mengutamakan prestise brand dan kualitas kosmetik premium.
+### A. Algoritma K-Means Clustering (k=3)
+K-Means membagi data transaksi ritel ke dalam 3 kelompok konsumen (klaster) dengan karakteristik yang sangat khas:
+* **Klaster 1 (Segmen Ekonomis/Budget):** Kelompok transaksi dengan harga produk yang terjangkau. Mewakili konsumen yang sangat sensitif terhadap harga (price-sensitive).
+* **Klaster 2 (Segmen Menengah/Mid-Range):** Kumpulan transaksi untuk kosmetik kelas menengah dengan volume unit terjual relatif stabil.
+* **Klaster 3 (Segmen Premium/Luks):** Kumpulan transaksi kosmetik mewah berharga tinggi (seperti Dior atau Estee Lauder). Konsumen di segmen ini cenderung mengabaikan harga karena lebih mengutamakan prestise brand dan kualitas.
 
-Penerapan data mining ini membantu atasan kita memetakan segmen pelanggan secara otomatis tanpa pengelompokan manual, sehingga kita bisa menargetkan iklan produk Dior/NARS langsung ke pembeli Klaster 3, dan promo bundling ke pembeli Klaster 1.
+### B. Algoritma DBSCAN Clustering (eps=0.08, minPts=4)
+DBSCAN mengelompokkan data berdasarkan kerapatan area transaksi pada scatter plot. Jika ada data transaksi yang jaraknya terisolasi/sepi di luar kepadatan minimum, DBSCAN akan mengelompokkannya sebagai **Outliers / Noise (Pencilan)**.
+* **Klaster Kepadatan Tinggi:** Mengelompokkan transaksi yang memiliki pola belanja seragam di area padat.
+* **Outliers / Noise (Pencilan):** Menampung transaksi belanja unik/langka yang tidak memenuhi syarat kepadatan minimum (kurang dari 4 tetangga dalam radius 0.08).
+
+### C. Perbandingan Hasil & Logika Algoritma:
+* **K-Means Clustering**: Berbasis partisi/centroid. Cocok untuk segmentasi harga pasar yang rapi dan teratur (k=3). Outlier dipaksa masuk ke klaster terdekat.
+* **DBSCAN Clustering**: Berbasis kerapatan. Sangat baik untuk mendeteksi data pencilan (noise) secara otomatis. Tidak membatasi jumlah klaster secara kaku.
+
+Penerapan perbandingan data mining ini membantu manajemen ritel tidak hanya memetakan segmen pelanggan secara makro (lewat K-Means), tetapi juga mendeteksi adanya transaksi anomali yang membutuhkan perhatian khusus (lewat DBSCAN).
 
 ---
 
@@ -520,15 +530,26 @@ Sebagai kesimpulan, proyek besar analitik data kosmetik tahun 2025 ini telah sel
         <li><strong>Harga Mahal Tetap Laku Keras:</strong> Konsumen kosmetik ritel mengutamakan kualitas brand dibanding memikirkan sensitivitas harga barang.</li>
     </ol>
 
-    <h2>8. Penerapan Metode Data Mining (K-Means Clustering)</h2>
-    <p>Untuk menggali pola tersembunyi yang lebih mendalam dari data transaksi penjualan kosmetik ini, kami menerapkan salah satu metode data mining yang sangat populer, yaitu <strong>K-Means Clustering (k=3)</strong>. Algoritma ini berjalan secara otomatis pada database MySQL dengan menganalisis dua variabel penting: harga produk (Price_USD) dan jumlah unit yang terjual (Units_Sold).</p>
-    <p>Melalui proses data mining ini, data transaksi kosmetik ritel berhasil dibagi ke dalam 3 kelompok konsumen (klaster) dengan karakteristik yang sangat khas:</p>
+    <h2>8. Penerapan Metode Data Mining & Perbandingan Algoritma (K-Means vs DBSCAN)</h2>
+    <p>Untuk menggali pola tersembunyi yang lebih mendalam dari data transaksi penjualan kosmetik ini, kami menerapkan dua buah metode data mining pengelompokan (clustering) yang berbeda untuk dibandingkan kinerjanya: <strong>K-Means Clustering (k=3)</strong> dan <strong>DBSCAN Clustering (eps=0.08, minPts=4)</strong>. Kedua algoritma ini berjalan pada database MySQL dengan menganalisis dua variabel penting: harga produk (Price_USD) dan jumlah unit yang terjual (Units_Sold).</p>
+    
+    <h3>A. Algoritma K-Means Clustering (k=3)</h3>
+    <p>K-Means membagi data transaksi ritel ke dalam 3 kelompok konsumen (klaster) dengan karakteristik yang sangat khas:</p>
     <ul>
-        <li><strong>Klaster 1: Segmen Ekonomis (Budget):</strong> Kelompok transaksi ini memiliki rata-rata harga produk yang terjangkau dengan volume pembelian unit yang bervariasi. Mewakili konsumen yang sangat sensitif terhadap harga (price-sensitive) yang biasanya berbelanja aksesori kecantikan ringan atau makeup kasual harian.</li>
-        <li><strong>Klaster 2: Segmen Menengah (Mid-Range):</strong> Kumpulan transaksi untuk kosmetik kelas menengah. Volume unit terjual di kelompok ini relatif stabil dan merata di semua negara ritel.</li>
-        <li><strong>Klaster 3: Segmen Premium (Luks):</strong> Kumpulan transaksi untuk kosmetik mewah berharga tinggi. Kelompok konsumen ini terbukti tidak terlalu peduli dengan harga mahal (harga bersifat inelastis) karena mereka lebih mengutamakan prestise brand dan kualitas kosmetik premium.</li>
+        <li><strong>Klaster 1 (Segmen Ekonomis/Budget):</strong> Kelompok transaksi dengan harga produk yang terjangkau. Mewakili konsumen yang sangat sensitif terhadap harga.</li>
+        <li><strong>Klaster 2 (Segmen Menengah/Mid-Range):</strong> Kumpulan transaksi untuk kosmetik kelas menengah dengan volume unit terjual relatif stabil.</li>
+        <li><strong>Klaster 3 (Segmen Premium/Luks):</strong> Kumpulan transaksi kosmetik mewah berharga tinggi. Kelompok ini cenderung mengabaikan harga karena lebih mengutamakan prestise brand.</li>
     </ul>
-    <p>Penerapan data mining ini membantu atasan kita memetakan segmen pelanggan secara otomatis tanpa pengelompokan manual, sehingga kita bisa menargetkan iklan produk Dior/NARS langsung ke pembeli Klaster 3, dan promo bundling ke pembeli Klaster 1.</p>
+
+    <h3>B. Algoritma DBSCAN Clustering (eps=0.08, minPts=4)</h3>
+    <p>DBSCAN mengelompokkan data berdasarkan kerapatan area transaksi pada scatter plot. Jika ada data transaksi yang jaraknya terisolasi di luar kepadatan minimum, DBSCAN akan mengelompokkannya sebagai <strong>Outliers / Noise (Pencilan)</strong> secara otomatis.</p>
+
+    <h3>C. Perbandingan Hasil & Logika Algoritma:</h3>
+    <ul>
+        <li><strong>K-Means Clustering:</strong> Berbasis partisi/centroid. Sangat cocok untuk segmentasi harga pasar yang rapi dan teratur (Ekonomis, Menengah, Premium).</li>
+        <li><strong>DBSCAN Clustering:</strong> Berbasis kerapatan. Sangat baik untuk mendeteksi data pencilan (noise) transaksi ritel secara otomatis tanpa membatasi jumlah klaster.</li>
+    </ul>
+    <p>Penerapan perbandingan data mining ini membantu manajemen ritel tidak hanya memetakan segmen pelanggan secara makro (lewat K-Means), tetapi juga mendeteksi adanya transaksi anomali yang membutuhkan perhatian khusus (lewat DBSCAN).</p>
 
     <h2>9. Rekomendasi Aksi Bisnis</h2>
     <ul>

@@ -275,6 +275,203 @@ class SalesController extends Controller
     }
 
     /**
+     * Run DBSCAN clustering on the sales dataset for data mining.
+     */
+    public function dbscan(Request $request)
+    {
+        $records = DB::table('makeup_sales')
+            ->select('sale_id', 'brand', 'product_type', 'price_usd', 'units_sold')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->sale_id,
+                    'brand' => $item->brand,
+                    'product_type' => $item->product_type,
+                    'x' => (float)$item->price_usd,
+                    'y' => (int)$item->units_sold,
+                ];
+            })->toArray();
+
+        if (empty($records)) {
+            return response()->json(['data' => [], 'summaries' => []]);
+        }
+
+        // Normalize data for better clustering (scale X and Y between 0 and 1)
+        $minX = min(array_column($records, 'x'));
+        $maxX = max(array_column($records, 'x'));
+        $minY = min(array_column($records, 'y'));
+        $maxY = max(array_column($records, 'y'));
+
+        $rangeX = ($maxX - $minX) ?: 1;
+        $rangeY = ($maxY - $minY) ?: 1;
+
+        $normalized = [];
+        foreach ($records as $index => $r) {
+            $normalized[$index] = [
+                'x' => ($r['x'] - $minX) / $rangeX,
+                'y' => ($r['y'] - $minY) / $rangeY
+            ];
+        }
+
+        // DBSCAN Parameters: Epsilon (radius) and MinPoints (density threshold)
+        $eps = 0.08; 
+        $minPts = 4;
+
+        $visited = array_fill(0, count($records), false);
+        $clusterId = 0;
+        $assignments = array_fill(0, count($records), -1); // -1 means Noise (or unclassified initially)
+
+        // Helper closure to get neighbors within epsilon radius
+        $getNeighbors = function ($pointIdx) use ($normalized, $eps) {
+            $neighbors = [];
+            $p = $normalized[$pointIdx];
+            foreach ($normalized as $idx => $other) {
+                $dist = sqrt(pow($p['x'] - $other['x'], 2) + pow($p['y'] - $other['y'], 2));
+                if ($dist <= $eps) {
+                    $neighbors[] = $idx;
+                }
+            }
+            return $neighbors;
+        };
+
+        for ($i = 0; $i < count($records); $i++) {
+            if ($visited[$i]) {
+                continue;
+            }
+            $visited[$i] = true;
+            $neighbors = $getNeighbors($i);
+
+            if (count($neighbors) < $minPts) {
+                $assignments[$i] = -1; // Noise for now
+            } else {
+                $clusterId++;
+                $assignments[$i] = $clusterId;
+                
+                // Expand cluster using a queue
+                $queue = $neighbors;
+                $qIdx = 0;
+                while ($qIdx < count($queue)) {
+                    $currPoint = $queue[$qIdx];
+                    if (!$visited[$currPoint]) {
+                        $visited[$currPoint] = true;
+                        $currNeighbors = $getNeighbors($currPoint);
+                        if (count($currNeighbors) >= $minPts) {
+                            // Merge new neighbors
+                            foreach ($currNeighbors as $nIdx) {
+                                if (!in_array($nIdx, $queue)) {
+                                    $queue[] = $nIdx;
+                                }
+                            }
+                        }
+                    }
+                    if ($assignments[$currPoint] === -1) {
+                        $assignments[$currPoint] = $clusterId;
+                    }
+                    $qIdx++;
+                }
+            }
+        }
+
+        // Group data and calculate cluster properties
+        $clusteredData = [];
+        $clusters = [];
+        $noisePoints = [];
+
+        foreach ($records as $index => $r) {
+            $cIdx = $assignments[$index];
+            $r['cluster'] = $cIdx;
+            $clusteredData[] = $r;
+
+            if ($cIdx === -1) {
+                $noisePoints[] = $r;
+            } else {
+                if (!isset($clusters[$cIdx])) {
+                    $clusters[$cIdx] = [];
+                }
+                $clusters[$cIdx][] = $r;
+            }
+        }
+
+        // Finalize summaries, sorting clusters by size descending
+        $clusterSummaries = [];
+        uasort($clusters, function ($a, $b) {
+            return count($b) <=> count($a);
+        });
+
+        $rank = 1;
+        foreach ($clusters as $origId => $items) {
+            $count = count($items);
+            $avg_price = 0;
+            $avg_units = 0;
+            $brands = [];
+            $products = [];
+
+            foreach ($items as $item) {
+                $avg_price += $item['x'];
+                $avg_units += $item['y'];
+                $brands[$item['brand']] = ($brands[$item['brand']] ?? 0) + 1;
+                $products[$item['product_type']] = ($products[$item['product_type']] ?? 0) + 1;
+            }
+
+            $avg_price = round($avg_price / $count, 2);
+            $avg_units = round($avg_units / $count, 1);
+            arsort($brands);
+            arsort($products);
+
+            $clusterSummaries[] = [
+                'cluster' => $origId,
+                'name' => "Cluster $rank (DBSCAN)",
+                'desc' => "Kumpulan transaksi dengan kepadatan tinggi (density-based). Rata-rata harga: \$" . $avg_price . ", rata-rata pembelian: " . $avg_units . " unit. Menunjukkan segmen pasar dengan pola belanja yang seragam.",
+                'count' => $count,
+                'avg_price' => $avg_price,
+                'avg_units' => $avg_units,
+                'top_brand' => key($brands) ?: 'N/A',
+                'top_product' => key($products) ?: 'N/A',
+                'is_noise' => false
+            ];
+            $rank++;
+        }
+
+        // Add Noise / Outliers as a special category
+        if (!empty($noisePoints)) {
+            $count = count($noisePoints);
+            $avg_price = 0;
+            $avg_units = 0;
+            $brands = [];
+            $products = [];
+
+            foreach ($noisePoints as $item) {
+                $avg_price += $item['x'];
+                $avg_units += $item['y'];
+                $brands[$item['brand']] = ($brands[$item['brand']] ?? 0) + 1;
+                $products[$item['product_type']] = ($products[$item['product_type']] ?? 0) + 1;
+            }
+
+            $avg_price = round($avg_price / $count, 2);
+            $avg_units = round($avg_units / $count, 1);
+            arsort($brands);
+            arsort($products);
+
+            $clusterSummaries[] = [
+                'cluster' => -1,
+                'name' => 'Outliers / Noise (Pencilan)',
+                'desc' => 'Kumpulan transaksi pencilan yang tidak memenuhi batas kepadatan minimum (minPts=4) dalam radius radius eps=0.08. Merupakan pola belanja eceran acak/tidak berkelompok.',
+                'count' => $count,
+                'avg_price' => $avg_price,
+                'avg_units' => $avg_units,
+                'top_brand' => key($brands) ?: 'N/A',
+                'top_product' => key($products) ?: 'N/A',
+                'is_noise' => true
+            ];
+        }
+
+        return response()->json([
+            'data' => $clusteredData,
+            'summaries' => $clusterSummaries
+        ]);
+    }
+
+    /**
      * Export the analytical report to PDF.
      */
     public function exportPdf(Request $request)

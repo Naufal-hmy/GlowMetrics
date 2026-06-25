@@ -7,4 +7,5 @@ use App\Http\Controllers\SalesController;
 Route::get('/', [SalesController::class, 'index']);
 Route::get('/api/sales-data', [SalesController::class, 'getData']);
 Route::get('/api/data-mining/k-means', [SalesController::class, 'kMeans']);
+Route::get('/api/data-mining/dbscan', [SalesController::class, 'dbscan']);
 Route::get('/export-pdf', [SalesController::class, 'exportPdf']);

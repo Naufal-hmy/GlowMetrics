@@ -1,0 +1,363 @@
+
+<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+    <meta charset="utf-8">
+    <title>Laporan Tugas Besar Analitik Data Kosmetik</title>
+    <style>
+        body {
+            font-family: "Calibri", "Arial", sans-serif;
+            color: #333333;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #7a2048;
+            font-size: 20pt;
+            border-bottom: 2px solid #d4af37;
+            padding-bottom: 5px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            color: #7a2048;
+            font-size: 14pt;
+            border-bottom: 1px solid #e0a899;
+            padding-bottom: 3px;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        h3 {
+            color: #333;
+            font-size: 11pt;
+            margin-top: 15px;
+            margin-bottom: 8px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th {
+            background-color: #7a2048;
+            color: #ffffff;
+            font-weight: bold;
+            padding: 8px;
+            border: 1px solid #7a2048;
+            text-align: left;
+        }
+        td {
+            padding: 8px;
+            border: 1px solid #cccccc;
+        }
+        tr:nth-child(even) td {
+            background-color: #f9f9f9;
+        }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        .font-bold { font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="text-center" style="margin-bottom: 40px;">
+        <h1 style="border-bottom: none; font-size: 22pt;">LAPORAN TUGAS BESAR</h1>
+        <h2 style="border-bottom: none; font-size: 14pt; color: #d4af37;">ANALITIK DAN VISUALISASI DATA PENJUALAN KOSMETIK (GLOWMETRICS)</h2>
+        <hr style="border: 0; border-top: 2px solid #7a2048; width: 60%; margin: 20px auto;">
+        <p><strong>Topik Analisis Penjualan:</strong> Data Transaksi Kosmetik/Makeup 2025</p>
+        <p><strong>Sistem Framework:</strong> Laravel Framework (MySQL) + Chart.js</p>
+        <p><strong>Jumlah Baris Dataset:</strong> 500 Baris Data Transaksi Penjualan</p>
+        <p><strong>Disusun Oleh:</strong> Mahasiswa Semester 6</p>
+    </div>
+
+    <h2>1. Latar Belakang & Problem Statement</h2>
+    <p>Pada zaman sekarang ini, bisnis di bidang kosmetik atau kecantikan berkembang sangat cepat sekali di berbagai negara. Ada banyak brand terkenal seperti MAC, L'Oreal, Maybelline, dan lainnya yang bersaing ketat untuk menjual berbagai macam produk kosmetik mulai dari lipstick, foundation, eyeshadow, hingga mascara. Di dalam dunia bisnis retail seperti ini, kalau kita tidak bisa melihat data penjualan dengan jelas, kita pasti bakal kesulitan buat mengatur persediaan barang di toko atau gudang. Misalnya saja, kita tidak tahu barang apa yang paling laku di negara tertentu, atau brand mana yang sebenarnya paling menyumbang keuntungan paling banyak buat toko kita sepanjang tahun.</p>
+    <p>Oleh karena itu, di dalam tugas besar ini kami mencoba membuat sebuah aplikasi dashboard analitik. Kita ingin memetakan perilaku belanja dari para konsumen kosmetik ini berdasarkan riwayat transaksi yang terjadi selama tahun 2025 kemarin. Analisis ini sangat penting agar kita tidak salah dalam mengambil keputusan, seperti menyetok barang terlalu banyak yang malah bikin rugi karena tidak laku, atau malah kehabisan stok barang pas lagi banyak-banyaknya orang yang mau beli.</p>
+    <p><strong>Problem Statement (Masalah yang Mau Kita Analisis):</strong></p>
+    <ul>
+        <li>Brand kosmetik mana saja yang sebenarnya paling disukai konsumen dan menghasilkan total uang pendapatan (revenue) paling banyak di tahun 2025?</li>
+        <li>Produk kosmetik jenis apa (misalnya lipstick atau eyeshadow) yang paling sering dibeli oleh pelanggan di berbagai wilayah ritel?</li>
+        <li>Bagaimana pola penjualan dari bulan ke bulan? Apakah ada waktu-woke tertentu di mana penjualan kita melonjak sangat tajam sekali?</li>
+        <li>Negara mana saja yang menyumbang penjualan paling besar dan saluran penjualan serta metode pembayaran apa yang paling sering dipakai oleh pembeli?</li>
+        <li>Apakah harga barang yang mahal itu pasti bikin jumlah barang yang terjual (units sold) jadi lebih sedikit, atau justru malah tidak berpengaruh sama sekali terhadap minat beli orang?</li>
+    </ul>
+    <p><strong>Siapa yang Butuh Laporan Analisis Ini?</strong> Hasil analisis data ini nantinya sangat berguna sekali buat manajer toko atau atasan kita di bagian pemasaran biar mereka bisa bikin strategi promosi yang pas. Selain itu, manajer gudang juga butuh data ini untuk membagi stok barang ke tiap-tiap cabang toko di berbagai negara agar tidak ada penumpukan produk di gudang tertentu saja.</p>
+
+    <h2>2. Dataset yang Digunakan</h2>
+    <p>Data yang kita pakai di dalam proyek analitik ini diambil dari data penjualan kosmetik tahun 2025. Di dalam file CSV yang kita olah, terdapat total data sebanyak <strong>500 baris transaksi</strong>. Untuk penjelasan mengenai masing-masing kolom yang ada di dalam dataset ini, bisa dilihat pada tabel di bawah ini:</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Nama Kolom</th>
+                <th>Tipe Data</th>
+                <th>Penjelasan Singkat Mengenai Kolom Ini</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td class="font-bold">Sale_ID</td><td>Integer</td><td>Nomor ID unik untuk membedakan tiap-tiap transaksi penjualan.</td></tr>
+            <tr><td class="font-bold">Date</td><td>Date</td><td>Tanggal kapan transaksi kosmetik itu dibeli oleh pelanggan.</td></tr>
+            <tr><td class="font-bold">Brand</td><td>String</td><td>Merek dari produk makeup (Fenty Beauty, L'Oreal, Maybelline, MAC, Estee Lauder, Dior, Huda Beauty, NARS).</td></tr>
+            <tr><td class="font-bold">Product_Type</td><td>String</td><td>Jenis produk kecantikannya (Eyeliner, Highlighter, Lipstick, Concealer, Blush, Mascara, Eyeshadow, Foundation).</td></tr>
+            <tr><td class="font-bold">Country</td><td>String</td><td>Negara tempat terjadinya pembelian kosmetik tersebut.</td></tr>
+            <tr><td class="font-bold">Sales_Channel</td><td>String</td><td>Melalui apa produk itu dijual (Retail Store, Online, Mall, Beauty Salon).</td></tr>
+            <tr><td class="font-bold">Payment_Method</td><td>String</td><td>Cara pembayaran yang dipakai (Digital Wallet, Cash, Card).</td></tr>
+            <tr><td class="font-bold">Price_USD</td><td>Decimal</td><td>Harga untuk satu unit produk kosmetik dalam satuan USD.</td></tr>
+            <tr><td class="font-bold">Units_Sold</td><td>Integer</td><td>Berapa banyak jumlah barang yang dibeli di transaksi itu.</td></tr>
+            <tr><td class="font-bold">Revenue_USD</td><td>Decimal</td><td>Total uang yang didapat (Hasil perkalian antara Price_USD dikali Units_Sold).</td></tr>
+        </tbody>
+    </table>
+
+    <h2>3. Data Cleaning (Proses Pembersihan Data)</h2>
+    <p>Sebelum data dari file CSV bisa kita masukkan ke dalam database MySQL dan ditampilkan di halaman web dashboard Laravel, kita harus melakukan proses pembersihan data terlebih dahulu. Hal ini sangat penting biar tidak ada error saat program database dijalankan dan visualisasi grafiknya nanti jadi akurat sesuai keadaan aslinya. Proses pembersihan data ini kita lakukan di dalam seeder Laravel secara otomatis saat mengimpor data.</p>
+    <ul>
+        <li><strong>Mengubah Format Tanggal:</strong> Di dalam file CSV mentah, kolom tanggalnya ditulis dalam format string biasa yaitu "MM/DD/YYYY" (contohnya "11/24/2025"). Format ini tidak bisa dibaca oleh tipe data tanggal di database MySQL. Makanya kita ubah formatnya pakai fungsi library Carbon di Laravel menjadi format standar "YYYY-MM-DD" (contohnya "2025-11-24").</li>
+        <li><strong>Menghapus Spasi Liar (Trimming Teks):</strong> Kita pakai fungsi trim() untuk menghapus spasi-spasi kosong yang tidak sengaja terketik di depan atau di belakang teks nama brand, tipe produk, maupun negara agar pengelompokan datanya tidak terpecah.</li>
+        <li><strong>Pengecekan Nilai Kosong dan Duplikat:</strong> Kita cek apakah ada kolom yang kosong atau ada transaksi yang terduplikasi. Dari hasil pengecekan script kita, untungnya data ini sudah cukup lengkap dan tidak ada baris yang kosong atau memiliki ID transaksi ganda.</li>
+        <li><strong>Memastikan Perhitungan Revenue:</strong> Kita hitung ulang nilai di kolom Revenue_USD dengan mengalikan harga produk (Price_USD) dengan jumlah terjual (Units_Sold). Ini dilakukan untuk meyakinkan kalau nilai pendapatan di tiap baris data sudah benar secara matematis.</li>
+    </ul>
+
+    <h2>4. Exploratory Data Analysis (EDA) & Analisis Awal</h2>
+    <p>Setelah data dibersihkan, kita melakukan analisis statistik sederhana untuk melihat karakteristik umum dari harga produk kosmetik (Price_USD) yang dijual. Ini penting biar atasan kita tahu rentang harga barang yang paling sering dibeli oleh pelanggan. Berikut adalah rentang statistiknya:</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Ukuran Statistik Deskriptif</th>
+                <th>Nilai Variabel Harga (Price_USD)</th>
+                <th>Arti/Interpretasi Logisnya Bagi Kita</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td class="font-bold">Rata-rata Harga (Mean)</td><td>$62.86</td><td>Secara rata-rata, harga kosmetik yang terjual ada di kelas menengah ke atas.</td></tr>
+            <tr><td class="font-bold">Nilai Tengah (Median)</td><td>$61.23</td><td>Setengah dari produk kosmetik harganya di bawah nilai ini, setengahnya lagi di atas ini.</td></tr>
+            <tr><td class="font-bold">Harga Termurah (Min)</td><td>$5.25</td><td>Menunjukkan harga produk paling murah (seperti kuas make up atau eyeliner biasa).</td></tr>
+            <tr><td class="font-bold">Harga Termahal (Max)</td><td>$119.93</td><td>Menunjukkan harga produk paket premium (seperti palette eyeshadow atau foundation mahal).</td></tr>
+            <tr><td class="font-bold">Standar Deviasi (Variasi Harga)</td><td>$32.61</td><td>Jarak variasi harga produk cukup besar, artinya rentang produk murah ke mahal sangat bervariasi.</td></tr>
+        </tbody>
+    </table>
+    <p>Bila kita lihat dari rentang harganya yang berkisar antara $5.25 sampai $119.93, sebaran datanya terlihat sangat merata dan wajar sekali. Tidak ada angka yang aneh (seperti harga minus atau harga miliaran) yang bisa merusak rata-rata analisis kita. Jadi, bisa disimpulkan datanya sangat layak untuk divisualisasikan ke dalam grafik.</p>
+
+    <h2>5. Visualisasi Data & Penjelasan Grafiknya</h2>
+    <h3>A. Total Pendapatan per Brand</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Brand Kosmetik</th>
+                <th>Total Pendapatan (USD)</th>
+                <th>Jumlah Unit Terjual</th>
+                <th>Rata-rata Harga Satuan (USD)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="font-bold">MAC</td>
+                <td class="text-right">$155,245.81</td>
+                <td class="text-right">2,155 unit</td>
+                <td class="text-right">$69.17</td>
+            </tr>
+            <tr>
+                <td class="font-bold">L'Oreal</td>
+                <td class="text-right">$123,593.20</td>
+                <td class="text-right">1,819 unit</td>
+                <td class="text-right">$69.51</td>
+            </tr>
+            <tr>
+                <td class="font-bold">Dior</td>
+                <td class="text-right">$99,810.99</td>
+                <td class="text-right">1,442 unit</td>
+                <td class="text-right">$70.22</td>
+            </tr>
+            <tr>
+                <td class="font-bold">Fenty Beauty</td>
+                <td class="text-right">$95,001.67</td>
+                <td class="text-right">1,569 unit</td>
+                <td class="text-right">$60.45</td>
+            </tr>
+            <tr>
+                <td class="font-bold">NARS</td>
+                <td class="text-right">$88,792.62</td>
+                <td class="text-right">1,659 unit</td>
+                <td class="text-right">$55.99</td>
+            </tr>
+            <tr>
+                <td class="font-bold">Estee Lauder</td>
+                <td class="text-right">$86,983.48</td>
+                <td class="text-right">1,492 unit</td>
+                <td class="text-right">$59.58</td>
+            </tr>
+            <tr>
+                <td class="font-bold">Huda Beauty</td>
+                <td class="text-right">$76,357.17</td>
+                <td class="text-right">1,394 unit</td>
+                <td class="text-right">$56.08</td>
+            </tr>
+            <tr>
+                <td class="font-bold">Maybelline</td>
+                <td class="text-right">$67,403.56</td>
+                <td class="text-right">1,178 unit</td>
+                <td class="text-right">$58.26</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>B. Distribusi Pendapatan per Negara (Pangsa Pasar)</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Negara Tempat Jualan</th>
+                <th>Total Pendapatan (USD)</th>
+                <th>Persentase Pangsa Pasar</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="font-bold">Saudi Arabia</td>
+                <td class="text-right">$120,778.08</td>
+                <td class="text-right">0.00%</td>
+            </tr>
+            <tr>
+                <td class="font-bold">UK</td>
+                <td class="text-right">$115,359.56</td>
+                <td class="text-right">0.00%</td>
+            </tr>
+            <tr>
+                <td class="font-bold">India</td>
+                <td class="text-right">$109,638.23</td>
+                <td class="text-right">0.00%</td>
+            </tr>
+            <tr>
+                <td class="font-bold">USA</td>
+                <td class="text-right">$96,005.51</td>
+                <td class="text-right">0.00%</td>
+            </tr>
+            <tr>
+                <td class="font-bold">UAE</td>
+                <td class="text-right">$93,567.94</td>
+                <td class="text-right">0.00%</td>
+            </tr>
+            <tr>
+                <td class="font-bold">Germany</td>
+                <td class="text-right">$92,125.73</td>
+                <td class="text-right">0.00%</td>
+            </tr>
+            <tr>
+                <td class="font-bold">Canada</td>
+                <td class="text-right">$85,349.39</td>
+                <td class="text-right">0.00%</td>
+            </tr>
+            <tr>
+                <td class="font-bold">France</td>
+                <td class="text-right">$80,364.06</td>
+                <td class="text-right">0.00%</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>C. Korelasi Harga vs Volume Penjualan per Jenis Produk</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Kategori Jenis Produk</th>
+                <th>Total Kuantitas Terjual</th>
+                <th>Rata-rata Harga Per Unit</th>
+                <th>Total Uang Pendapatan (USD)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="font-bold">Mascara</td>
+                <td class="text-right">1,900 unit</td>
+                <td class="text-right">$59.54</td>
+                <td class="text-right font-bold">$116,135.07</td>
+            </tr>
+            <tr>
+                <td class="font-bold">Eyeshadow</td>
+                <td class="text-right">1,716 unit</td>
+                <td class="text-right">$64.81</td>
+                <td class="text-right font-bold">$104,839.02</td>
+            </tr>
+            <tr>
+                <td class="font-bold">Eyeliner</td>
+                <td class="text-right">1,646 unit</td>
+                <td class="text-right">$64.66</td>
+                <td class="text-right font-bold">$104,735.62</td>
+            </tr>
+            <tr>
+                <td class="font-bold">Highlighter</td>
+                <td class="text-right">1,526 unit</td>
+                <td class="text-right">$67.20</td>
+                <td class="text-right font-bold">$99,516.43</td>
+            </tr>
+            <tr>
+                <td class="font-bold">Concealer</td>
+                <td class="text-right">1,352 unit</td>
+                <td class="text-right">$67.72</td>
+                <td class="text-right font-bold">$98,215.88</td>
+            </tr>
+            <tr>
+                <td class="font-bold">Foundation</td>
+                <td class="text-right">1,523 unit</td>
+                <td class="text-right">$65.32</td>
+                <td class="text-right font-bold">$96,756.97</td>
+            </tr>
+            <tr>
+                <td class="font-bold">Blush</td>
+                <td class="text-right">1,453 unit</td>
+                <td class="text-right">$61.32</td>
+                <td class="text-right font-bold">$89,158.26</td>
+            </tr>
+            <tr>
+                <td class="font-bold">Lipstick</td>
+                <td class="text-right">1,592 unit</td>
+                <td class="text-right">$53.62</td>
+                <td class="text-right font-bold">$83,831.25</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>6. Penjelasan Mengenai Dashboard Interaktif (Laravel)</h2>
+    <p>Kami telah membangun sebuah sistem dashboard interaktif berbasis web menggunakan Laravel. Aplikasi web ini sengaja dibuat agar atasan kita tidak pusing saat mau menganalisis data penjualan. Fitur utama yang ada di dashboard tersebut yaitu:</p>
+    <ul>
+        <li><strong>Custom Multi-Select Dropdown (Filter Dinamis):</strong> Atasan kita bisa memilih beberapa kriteria filter sekaligus secara bersamaan (multi-select). Misalnya saja, kita bisa mencentang brand MAC dan NARS bersamaan untuk membandingkan performa penjualan keduanya secara berdampingan. Lebih uniknya lagi, jika kita memilih tepat satu brand saja (misalnya MAC), grafik batang akan otomatis beralih untuk menampilkan perbandingan produk internal di brand MAC tersebut (seperti Lipstick vs Foundation vs Mascara). Slicer filter ini dirancang dengan dropdown checkbox kustom dengan tampilan glassmorphic rose gold yang sangat mewah.</li>
+        <li><strong>Grafik Otomatis Berubah (AJAX):</strong> Begitu checkbox filter kita centang atau hapus centangnya, angka ringkasan di atas (seperti total uang masuk dan jumlah unit terjual) beserta keempat grafik visualisasi di atas akan langsung berubah saat itu juga tanpa perlu memuat ulang (refresh) halaman website.</li>
+        <li><strong>Tabel Transaksi di Bawah:</strong> Dilengkapi juga dengan kolom pencarian cepat untuk mencari data mentah transaksi kosmetik secara langsung.</li>
+    </ul>
+
+    <h2>7. Insight (Temuan Penting dari Data Penjualan)</h2>
+    <ol>
+        <li><strong>Brand MAC dan L'Oreal Paling Dominan:</strong> Kedua brand ini terbukti menghasilkan kontribusi uang paling besar di toko kosmetik kita. Ini pertanda kalau pelanggan sangat loyal sekali terhadap produk dari MAC dan L'Oreal.</li>
+        <li><strong>Mascara dan Eyeshadow Paling Banyak Laku:</strong> Kategori produk untuk riasan mata (Mascara dan Eyeshadow) adalah produk yang paling sering dibeli dalam jumlah unit terbanyak.</li>
+        <li><strong>Pola Lonjakan Akhir Tahun (Efek Musiman):</strong> Kenaikan penjualan di bulan November dan Desember dipicu momen liburan akhir tahun, hari raya, dan budaya bertukar kado kosmetik.</li>
+        <li><strong>Pelanggan Sangat Suka Memakai Dompet Digital (Digital Wallet):</strong> Metode transaksi keuangan nontunai menjadi favorit karena cepat dan praktis.</li>
+        <li><strong>Harga Mahal Tetap Laku Keras:</strong> Konsumen kosmetik ritel mengutamakan kualitas brand dibanding memikirkan sensitivitas harga barang.</li>
+    </ol>
+
+    <h2>8. Penerapan Metode Data Mining & Perbandingan Algoritma (K-Means vs DBSCAN)</h2>
+    <p>Untuk menggali pola tersembunyi yang lebih mendalam dari data transaksi penjualan kosmetik ini, kami menerapkan dua buah metode data mining pengelompokan (clustering) yang berbeda untuk dibandingkan kinerjanya: <strong>K-Means Clustering (k=3)</strong> dan <strong>DBSCAN Clustering (eps=0.08, minPts=4)</strong>. Kedua algoritma ini berjalan pada database MySQL dengan menganalisis dua variabel penting: harga produk (Price_USD) dan jumlah unit yang terjual (Units_Sold).</p>
+    
+    <h3>A. Algoritma K-Means Clustering (k=3)</h3>
+    <p>K-Means membagi data transaksi ritel ke dalam 3 kelompok konsumen (klaster) dengan karakteristik yang sangat khas:</p>
+    <ul>
+        <li><strong>Klaster 1 (Segmen Ekonomis/Budget):</strong> Kelompok transaksi dengan harga produk yang terjangkau. Mewakili konsumen yang sangat sensitif terhadap harga.</li>
+        <li><strong>Klaster 2 (Segmen Menengah/Mid-Range):</strong> Kumpulan transaksi untuk kosmetik kelas menengah dengan volume unit terjual relatif stabil.</li>
+        <li><strong>Klaster 3 (Segmen Premium/Luks):</strong> Kumpulan transaksi kosmetik mewah berharga tinggi. Kelompok ini cenderung mengabaikan harga karena lebih mengutamakan prestise brand.</li>
+    </ul>
+
+    <h3>B. Algoritma DBSCAN Clustering (eps=0.08, minPts=4)</h3>
+    <p>DBSCAN mengelompokkan data berdasarkan kerapatan area transaksi pada scatter plot. Jika ada data transaksi yang jaraknya terisolasi di luar kepadatan minimum, DBSCAN akan mengelompokkannya sebagai <strong>Outliers / Noise (Pencilan)</strong> secara otomatis.</p>
+
+    <h3>C. Perbandingan Hasil & Logika Algoritma:</h3>
+    <ul>
+        <li><strong>K-Means Clustering:</strong> Berbasis partisi/centroid. Sangat cocok untuk segmentasi harga pasar yang rapi dan teratur (Ekonomis, Menengah, Premium).</li>
+        <li><strong>DBSCAN Clustering:</strong> Berbasis kerapatan. Sangat baik untuk mendeteksi data pencilan (noise) transaksi ritel secara otomatis tanpa membatasi jumlah klaster.</li>
+    </ul>
+    <p>Penerapan perbandingan data mining ini membantu manajemen ritel tidak hanya memetakan segmen pelanggan secara makro (lewat K-Means), tetapi juga mendeteksi adanya transaksi anomali yang membutuhkan perhatian khusus (lewat DBSCAN).</p>
+
+    <h2>9. Rekomendasi Aksi Bisnis</h2>
+    <ul>
+        <li>Bagian gudang harus menyetok produk Mascara dan Eyeshadow dari brand MAC dan L'Oreal lebih banyak (sekitar 30% hingga 40% dari hari biasa) sejak bulan September agar pas puncak belanja akhir tahun kita tidak kehabisan stok barang di toko.</li>
+        <li>Kita bisa membuat paket gabungan (bundling) produk. Misalnya membeli paket foundation premium seharga $100 gratis eyeliner/blush murah. Ini trik yang sangat bagus untuk menghabiskan stok produk yang kurang laku tapi tetap menguntungkan.</li>
+        <li>Toko kosmetik kita disarankan bekerja sama dengan penyedia e-wallet (seperti GoPay/OVO/ShopeePay) untuk mengadakan event cashback agar proses checkout transaksi ritel di toko menjadi lebih cepat.</li>
+        <li>Karena konsumen kita terbukti tidak terlalu peduli dengan harga mahal selama produknya bagus, kita bisa memperbanyak koleksi kosmetik premium bernilai tinggi untuk menaikkan keuntungan rata-rata per transaksi.</li>
+    </ul>
+
+    <h2>10. Kesimpulan</h2>
+    <p>Sebagai kesimpulan, proyek besar analitik data kosmetik tahun 2025 ini telah selesai dikerjakan dengan baik menggunakan sistem database Laravel dan visualisasi interaktif. Temuan mengenai tingginya loyalitas brand pada MAC/L'Oreal serta peningkatan pesat penjualan di akhir tahun harus dijadikan acuan utama bagi toko kita untuk menyusun rencana stok barang dan promosi iklan di masa mendatang.</p>
+</body>
+</html>

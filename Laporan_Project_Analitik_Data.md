@@ -162,16 +162,26 @@ Pembacaan analitis dari sebaran visualisasi dan analisis data GlowMetrics adalah
 
 ---
 
-## 8. Penerapan Metode Data Mining (K-Means Clustering)
+## 8. Penerapan Metode Data Mining & Perbandingan Algoritma (K-Means vs DBSCAN)
 
-Untuk menggali pola tersembunyi yang lebih mendalam dari data transaksi penjualan kosmetik ini, kami menerapkan salah satu metode data mining yang sangat populer, yaitu **K-Means Clustering (k=3)**. Algoritma ini berjalan secara otomatis pada database MySQL dengan menganalisis dua variabel penting: harga produk (`Price_USD`) dan jumlah unit yang terjual (`Units_Sold`).
+Untuk menggali pola tersembunyi yang lebih mendalam dari data transaksi penjualan kosmetik ini, kami menerapkan dua buah metode data mining pengelompokan (clustering) yang berbeda untuk dibandingkan kinerjanya: **K-Means Clustering (k=3)** dan **DBSCAN Clustering (eps=0.08, minPts=4)**. Kedua algoritma ini berjalan pada database MySQL dengan menganalisis dua variabel penting: harga produk (`Price_USD`) dan jumlah unit yang terjual (`Units_Sold`).
 
-Melalui proses data mining ini, data transaksi kosmetik ritel berhasil dibagi ke dalam 3 kelompok konsumen (klaster) dengan karakteristik yang sangat khas:
-* **Klaster 1: Segmen Ekonomis (Budget):** Kelompok transaksi ini memiliki rata-rata harga produk yang terjangkau dengan volume pembelian unit yang bervariasi. Mewakili konsumen yang sangat sensitif terhadap harga (price-sensitive) yang biasanya berbelanja aksesori kecantikan ringan atau makeup kasual harian.
-* **Klaster 2: Segmen Menengah (Mid-Range):** Kumpulan transaksi untuk kosmetik kelas menengah. Volume unit terjual di kelompok ini relatif stabil dan merata di semua negara ritel.
-* **Klaster 3: Segmen Premium (Luks):** Kumpulan transaksi untuk kosmetik mewah berharga tinggi. Kelompok konsumen ini terbukti tidak terlalu peduli dengan harga mahal (harga bersifat inelastis) karena mereka lebih mengutamakan prestise brand dan kualitas kosmetik premium.
+### A. Algoritma K-Means Clustering (k=3)
+K-Means membagi data transaksi ritel ke dalam 3 kelompok konsumen (klaster) dengan karakteristik yang sangat khas:
+* **Klaster 1 (Segmen Ekonomis/Budget):** Kelompok transaksi dengan harga produk yang terjangkau. Mewakili konsumen yang sangat sensitif terhadap harga (price-sensitive).
+* **Klaster 2 (Segmen Menengah/Mid-Range):** Kumpulan transaksi untuk kosmetik kelas menengah dengan volume unit terjual relatif stabil.
+* **Klaster 3 (Segmen Premium/Luks):** Kumpulan transaksi kosmetik mewah berharga tinggi (seperti Dior atau Estee Lauder). Konsumen di segmen ini cenderung mengabaikan harga karena lebih mengutamakan prestise brand dan kualitas.
 
-Penerapan data mining ini membantu atasan kita memetakan segmen pelanggan secara otomatis tanpa pengelompokan manual, sehingga kita bisa menargetkan iklan produk Dior/NARS langsung ke pembeli Klaster 3, dan promo bundling ke pembeli Klaster 1.
+### B. Algoritma DBSCAN Clustering (eps=0.08, minPts=4)
+DBSCAN mengelompokkan data berdasarkan kerapatan area transaksi pada scatter plot. Jika ada data transaksi yang jaraknya terisolasi/sepi di luar kepadatan minimum, DBSCAN akan mengelompokkannya sebagai **Outliers / Noise (Pencilan)**.
+* **Klaster Kepadatan Tinggi:** Mengelompokkan transaksi yang memiliki pola belanja seragam di area padat.
+* **Outliers / Noise (Pencilan):** Menampung transaksi belanja unik/langka yang tidak memenuhi syarat kepadatan minimum (kurang dari 4 tetangga dalam radius 0.08).
+
+### C. Perbandingan Hasil & Logika Algoritma:
+* **K-Means Clustering**: Berbasis partisi/centroid. Cocok untuk segmentasi harga pasar yang rapi dan teratur (k=3). Outlier dipaksa masuk ke klaster terdekat.
+* **DBSCAN Clustering**: Berbasis kerapatan. Sangat baik untuk mendeteksi data pencilan (noise) secara otomatis. Tidak membatasi jumlah klaster secara kaku.
+
+Penerapan perbandingan data mining ini membantu manajemen ritel tidak hanya memetakan segmen pelanggan secara makro (lewat K-Means), tetapi juga mendeteksi adanya transaksi anomali yang membutuhkan perhatian khusus (lewat DBSCAN).
 
 ---
 
