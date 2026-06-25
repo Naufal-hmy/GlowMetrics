@@ -211,10 +211,10 @@ class SalesController extends Controller
                 $sums[$cIdx]['count']++;
             }
 
-            foreach ($centroids as $cIdx => &$c) {
+            foreach ($centroids as $cIdx => $c) {
                 if ($sums[$cIdx]['count'] > 0) {
-                    $c['x'] = $sums[$cIdx]['x'] / $sums[$cIdx]['count'];
-                    $c['y'] = $sums[$cIdx]['y'] / $sums[$cIdx]['count'];
+                    $centroids[$cIdx]['x'] = $sums[$cIdx]['x'] / $sums[$cIdx]['count'];
+                    $centroids[$cIdx]['y'] = $sums[$cIdx]['y'] / $sums[$cIdx]['count'];
                 }
             }
         }
