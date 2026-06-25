@@ -5,7 +5,7 @@
 - **Sistem Framework:** Laravel Framework (MySQL) + Chart.js
 - **Jumlah Baris Dataset:** 500 Baris Data Transaksi Penjualan
 - **Disusun Oleh:** Mahasiswa Semester 6
-- **Tanggal Pembuatan:** 08 June 2026
+- **Tanggal Pembuatan:** 25 June 2026
 
 ---
 
@@ -153,7 +153,7 @@ Kami telah membangun sebuah sistem dashboard interaktif berbasis web menggunakan
 
 ## 7. Insight (Temuan Penting dari Data Penjualan)
 
-Berdasarkan analisis exploratory data analysis (EDA) dan visualisasi data penjualan, berikut adalah beberapa temuan (insight) penting yang diperoleh:
+Pembacaan analitis dari sebaran visualisasi dan analisis data GlowMetrics adalah sebagai berikut:
 1. **Brand MAC dan L'Oreal Paling Dominan:** Kedua brand ini terbukti menghasilkan kontribusi uang paling besar di toko kosmetik kita. Ini pertanda kalau pelanggan sangat loyal sekali terhadap produk dari MAC dan L'Oreal.
 2. **Mascara dan Eyeshadow Paling Banyak Laku:** Kategori produk untuk riasan mata (Mascara dan Eyeshadow) adalah produk yang paling sering dibeli dalam jumlah unit terbanyak. Kita harus memastikan produk kategori ini selalu tersedia di toko.
 3. **Pola Lonjakan Akhir Tahun (Efek Musiman):** Ada kenaikan penjualan yang kelihatan sangat jelas sekali di bulan November dan Desember. Ini kemungkinan besar terjadi karena adanya momen liburan akhir tahun, perayaan hari raya, dan budaya bertukar kado kosmetik di kalangan wanita.
