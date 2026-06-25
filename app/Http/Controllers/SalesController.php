@@ -225,6 +225,7 @@ class SalesController extends Controller
             'count' => 0,
             'avg_price' => 0,
             'avg_units' => 0,
+            'total_revenue' => 0,
             'brands' => [],
             'products' => []
         ]);
@@ -237,6 +238,7 @@ class SalesController extends Controller
             $clusterSummaries[$cIdx]['count']++;
             $clusterSummaries[$cIdx]['avg_price'] += $r['x'];
             $clusterSummaries[$cIdx]['avg_units'] += $r['y'];
+            $clusterSummaries[$cIdx]['total_revenue'] += ($r['x'] * $r['y']);
             
             $clusterSummaries[$cIdx]['brands'][$r['brand']] = ($clusterSummaries[$cIdx]['brands'][$r['brand']] ?? 0) + 1;
             $clusterSummaries[$cIdx]['products'][$r['product_type']] = ($clusterSummaries[$cIdx]['products'][$r['product_type']] ?? 0) + 1;
@@ -247,6 +249,7 @@ class SalesController extends Controller
             if ($summary['count'] > 0) {
                 $summary['avg_price'] = round($summary['avg_price'] / $summary['count'], 2);
                 $summary['avg_units'] = round($summary['avg_units'] / $summary['count'], 1);
+                $summary['total_revenue'] = round($summary['total_revenue'], 2);
                 
                 arsort($summary['brands']);
                 arsort($summary['products']);
@@ -403,18 +406,21 @@ class SalesController extends Controller
             $count = count($items);
             $avg_price = 0;
             $avg_units = 0;
+            $total_revenue = 0;
             $brands = [];
             $products = [];
 
             foreach ($items as $item) {
                 $avg_price += $item['x'];
                 $avg_units += $item['y'];
+                $total_revenue += ($item['x'] * $item['y']);
                 $brands[$item['brand']] = ($brands[$item['brand']] ?? 0) + 1;
                 $products[$item['product_type']] = ($products[$item['product_type']] ?? 0) + 1;
             }
 
             $avg_price = round($avg_price / $count, 2);
             $avg_units = round($avg_units / $count, 1);
+            $total_revenue = round($total_revenue, 2);
             arsort($brands);
             arsort($products);
 
@@ -425,6 +431,7 @@ class SalesController extends Controller
                 'count' => $count,
                 'avg_price' => $avg_price,
                 'avg_units' => $avg_units,
+                'total_revenue' => $total_revenue,
                 'top_brand' => key($brands) ?: 'N/A',
                 'top_product' => key($products) ?: 'N/A',
                 'is_noise' => false
@@ -437,18 +444,21 @@ class SalesController extends Controller
             $count = count($noisePoints);
             $avg_price = 0;
             $avg_units = 0;
+            $total_revenue = 0;
             $brands = [];
             $products = [];
 
             foreach ($noisePoints as $item) {
                 $avg_price += $item['x'];
                 $avg_units += $item['y'];
+                $total_revenue += ($item['x'] * $item['y']);
                 $brands[$item['brand']] = ($brands[$item['brand']] ?? 0) + 1;
                 $products[$item['product_type']] = ($products[$item['product_type']] ?? 0) + 1;
             }
 
             $avg_price = round($avg_price / $count, 2);
             $avg_units = round($avg_units / $count, 1);
+            $total_revenue = round($total_revenue, 2);
             arsort($brands);
             arsort($products);
 
@@ -459,6 +469,7 @@ class SalesController extends Controller
                 'count' => $count,
                 'avg_price' => $avg_price,
                 'avg_units' => $avg_units,
+                'total_revenue' => $total_revenue,
                 'top_brand' => key($brands) ?: 'N/A',
                 'top_product' => key($products) ?: 'N/A',
                 'is_noise' => true

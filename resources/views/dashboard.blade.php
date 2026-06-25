@@ -994,6 +994,7 @@
                             </div>
                             <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0.1rem 0; line-height: 1.5; text-indent: 0; text-align: left;">${summary.desc}</p>
                             <div style="margin-top: 0.5rem; font-size: 0.85rem; width: 100%; border-top: 1px solid rgba(224, 168, 153, 0.1); padding-top: 0.6rem; line-height: 1.6;">
+                                <div>Total Pendapatan: <strong style="color: #50e3c2;">${formatCurrency(summary.total_revenue)}</strong></div>
                                 <div>Rerata Harga: <strong class="text-gold">$${summary.avg_price}</strong></div>
                                 <div>Rerata Unit Terbeli: <strong class="text-pink">${summary.avg_units} unit</strong></div>
                                 <div style="margin-top: 0.4rem; font-size: 0.75rem; color: var(--text-secondary); border-top: 1px dashed rgba(255,255,255,0.05); padding-top: 0.3rem;">
